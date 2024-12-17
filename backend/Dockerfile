@@ -1,29 +1,11 @@
-# Usa una imagen base de PHP con Composer preinstalado
-FROM php:8.1-cli
+# Usar la imagen base
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1731369831
 
-# Instala Node.js y Yarn
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
-    apt-get update && \
-    apt-get install -y nodejs && \
-    npm install -g yarn
+# Establecer el directorio de trabajo
+WORKDIR /app/
 
-# Establece el directorio de trabajo
-WORKDIR /app
+# Copiar los archivos al contenedor
+COPY . /app/.
 
-# Copia los archivos de tu aplicación
-COPY . /app/
-
-# Instala las dependencias de Composer y Yarn
-RUN composer install && \
-    yarn && \
-    yarn prod
-
-# Ejecuta las optimizaciones de Laravel
-RUN php artisan optimize && \
-    php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
-    php artisan migrate --force
-
-# Comando por defecto (opcional)
-CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
+# Instalar dependencias de frontend y backend
+RUN yarn && yarn prod && php artisan optimize && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force
