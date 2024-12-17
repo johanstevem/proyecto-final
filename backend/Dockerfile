@@ -23,7 +23,8 @@ RUN apt-get update && apt-get install -y \
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/local/bin/composer
-RUN chmod +x /usr/local/bin/composer
+
+# Verificar la instalación de Composer
 RUN composer --version
 
 # Instalar dependencias de Composer, Yarn y Laravel
@@ -36,3 +37,4 @@ RUN composer install && yarn && yarn prod \
 
 # Comando para iniciar el servidor web
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+
