@@ -2,9 +2,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",                       // Comando para desarrollo (si estás usando Vite para los assets)
-    "build": "vite build",               // Comando para construir los assets (si usas Vite)
-    "start": "php -S 0.0.0.0:3000 -t public"  // Comando para iniciar Laravel usando el servidor PHP integrado
+    "dev": "vite",                      
+    "build": "vite build",              
+    "start": "php -S 0.0.0.0:3000 -t public"  
   },
   "devDependencies": {
     "axios": "^1.7.4",
