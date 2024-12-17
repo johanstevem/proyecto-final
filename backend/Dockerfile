@@ -1,11 +1,20 @@
-FROM php:8.2-fpm
+# Utilizar una imagen base con PHP y Composer
+FROM php:8.4-cli
 
-WORKDIR /var/www/html
+# Instalar las dependencias necesarias para Composer
+RUN apt-get update && apt-get install -y \
+    unzip \
+    git \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-COPY . .
+# Establecer el directorio de trabajo
+WORKDIR /app
 
-RUN composer install --no-interaction --optimize-autoloader
-RUN yarn && yarn prod
+# Copiar los archivos del proyecto al contenedor
+COPY . /app/.
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Instalar las dependencias de Composer y ejecutar otros comandos
+RUN composer install && yarn && yarn prod && php artisan optimize && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force
 
+# Comando para iniciar la aplicación
+CMD ["php", "artisan", "serve"]
