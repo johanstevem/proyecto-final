@@ -5,12 +5,32 @@ FROM ghcr.io/railwayapp/nixpacks:ubuntu-1731369831
 WORKDIR /app/
 
 # Copiar los archivos al contenedor
-COPY . /app/.
+COPY . /app/
+
+# Instalar las dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    curl \
+    php-cli \
+    php-mbstring \
+    php-xml \
+    php-curl \
+    php-json \
+    php-bcmath \
+    git \
+    unzip \
+    && apt-get clean
 
 # Instalar Composer
-RUN apt-get update && apt-get install -y curl php-cli php-mbstring git unzip
 RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/local/bin/composer
 
-# Instalar dependencias
-RUN composer install && yarn && yarn prod && php artisan optimize && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force
+# Instalar dependencias de Composer, Yarn y Laravel
+RUN composer install && yarn && yarn prod \
+    && php artisan optimize \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan migrate --force
+
+# Comando para iniciar el servidor web
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
