@@ -1,7 +1,7 @@
-# Usar una imagen base de Ubuntu
-FROM ghcr.io/railwayapp/nixpacks:ubuntu-1731369831
+# Usar una imagen base que permita instalar dependencias
+FROM php:8.1-cli
 
-# Instalar dependencias necesarias para Composer y otros comandos
+# Instalar dependencias necesarias como curl, git, unzip y Composer
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -14,6 +14,6 @@ WORKDIR /app
 # Copiar los archivos del proyecto
 COPY . /app/
 
-# Ejecutar los comandos necesarios
+# Ejecutar los comandos necesarios para instalar dependencias y configurar el proyecto
 RUN composer install && yarn && yarn prod && php artisan optimize && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force
 
