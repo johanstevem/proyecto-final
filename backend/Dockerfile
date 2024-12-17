@@ -1,19 +1,29 @@
-# Usar una imagen base que permita instalar dependencias
+# Usa una imagen base de PHP con Composer preinstalado
 FROM php:8.1-cli
 
-# Instalar dependencias necesarias como curl, git, unzip y Composer
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    unzip \
-    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Instala Node.js y Yarn
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    npm install -g yarn
 
-# Establecer el directorio de trabajo
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos del proyecto
+# Copia los archivos de tu aplicación
 COPY . /app/
 
-# Ejecutar los comandos necesarios para instalar dependencias y configurar el proyecto
-RUN composer install && yarn && yarn prod && php artisan optimize && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force
+# Instala las dependencias de Composer y Yarn
+RUN composer install && \
+    yarn && \
+    yarn prod
 
+# Ejecuta las optimizaciones de Laravel
+RUN php artisan optimize && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan migrate --force
+
+# Comando por defecto (opcional)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
