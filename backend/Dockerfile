@@ -1,40 +1,30 @@
-# Usar la imagen base
-FROM ghcr.io/railwayapp/nixpacks:ubuntu-1731369831
+#FROM php:8.2-fpm
 
-# Establecer el directorio de trabajo
-WORKDIR /app/
-
-# Copiar los archivos al contenedor
-COPY . /app/
-
-# Instalar las dependencias del sistema
+# Instalar extensiones necesarias para PostgreSQL
 RUN apt-get update && apt-get install -y \
-    curl \
-    php-cli \
-    php-mbstring \
-    php-xml \
-    php-curl \
-    php-json \
-    php-bcmath \
-    git \
+    libpq-dev \
     unzip \
-    && apt-get clean
-
+    git \
+    zip \
+    && docker-php-ext-install pdo_pgsql
 # Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php
-RUN mv composer.phar /usr/local/bin/composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Verificar la instalación de Composer
-RUN composer --version
+# Configuración del directorio de trabajo
+WORKDIR /var/www
 
-# Instalar dependencias de Composer, Yarn y Laravel
-RUN composer install && yarn && yarn prod \
-    && php artisan optimize \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan migrate --force
+# Copiar todos los archivos del proyecto
+COPY . .
 
-# Comando para iniciar el servidor web
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Instalar dependencias de PHP
+RUN composer install --no-dev --optimize-autoloader
 
+# Ajustar permisos
+RUN chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data /var/www
+
+# Exponer el puerto de PHP-FPM
+EXPOSE 9000
+
+# Iniciar PHP-FPM
+CMD ["php-fpm"]
