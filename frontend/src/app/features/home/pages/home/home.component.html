@@ -1,0 +1,89 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" class="logo">
+            <img src="../../../../../assets/imagenes/logo.png" alt="logo" />
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login">Iniciar sesión</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="home" id="home">
+  <div class="head_container">
+    <div class="box">
+      <div class="text">
+        <h1>Hotel</h1>
+        <p>Disfruta de la mejor experiencia en nuestro hotel</p>
+        <button>MÁS INFORMACIÓN</button>
+      </div>
+    </div>
+    <div class="image">
+      <img src="../../../../../assets/imagenes/home1.jpg" class="slide" />
+    </div>
+    <div class="image">
+      <!-- Usa la imagen seleccionada desde el método img -->
+      <img [src]="currentImage" class="slide" />
+    </div>
+    <div class="image_item">
+      <img
+        src="assets/imagenes/home1.jpg"
+        alt=""
+        class="slide active"
+        (click)="img('assets/imagenes/home1.jpg')"
+      />
+      <img
+        src="assets/imagenes/home2.jpg"
+        alt=""
+        class="slide"
+        (click)="img('assets/imagenes/home2.jpg')"
+      />
+      <img
+        src="assets/imagenes/home3.jpg"
+        alt=""
+        class="slide"
+        (click)="img('assets/imagenes/home3.jpg')"
+      />
+      <img
+        src="assets/imagenes/home4.jpg"
+        alt=""
+        class="slide"
+        (click)="img('assets/imagenes/home4.jpg')"
+      />
+    </div>
+  </div>
+</section>
+
+<section class="book">
+  <div class="container flex">
+    <div class="input grid">
+      <div class="box">
+        <label>Entrada:</label>
+        <input type="date" placeholder="Fecha de entrada" />
+      </div>
+      <div class="box">
+        <label>Salida:</label>
+        <input type="date" placeholder="Fecha de salida" />
+      </div>
+      <div class="box">
+        <label>Adultos:</label>
+        <input type="number" placeholder="0" />
+      </div>
+      <div class="box">
+        <label>Niños:</label>
+        <input type="number" placeholder="0" />
+      </div>
+    </div>
+    <div class="search">
+      <button type="submit">Buscar</button>
+    </div>
+  </div>
+</section>
+
+<router-outlet></router-outlet>

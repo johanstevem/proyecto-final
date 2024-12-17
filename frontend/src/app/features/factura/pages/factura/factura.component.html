@@ -1,0 +1,255 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a href="#" class="navbar-brand d-flex align-items-center">
+      <img src="../../../../../assets/imagenes/logo.png" alt="logo" width="50" class="me-2" />
+      <span>Panel empleado</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login">Cerrar sesión</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/comentario">Comentario</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/factura">Factura</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reserva">Reserva</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/servicio">Servicio</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <!-- Card para crear factura -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h3 class="card-title mb-0">Crear Factura</h3>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="crearFactura()">
+        <div class="mb-3">
+          <label for="reserva_id" class="form-label">Seleccione la Reserva:</label>
+          <select id="reserva_id" class="form-select" [(ngModel)]="nuevaFactura.reserva_id" name="reserva_id" required>
+            <option value="" disabled selected>Seleccione una reserva</option>
+            <option *ngFor="let reserva of reservas" [value]="reserva.id">
+              Reserva #{{ reserva.id }} ({{ getUsuarioName(reserva.usuario_id) }})
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="servicio_id" class="form-label">Seleccione el Servicio:</label>
+          <select id="servicio_id" class="form-select" [(ngModel)]="nuevaFactura.servicio_id" name="servicio_id" required>
+            <option value="" disabled selected>Seleccione un servicio</option>
+            <option *ngFor="let servicio of servicios" [value]="servicio.id">
+              {{ servicio.nombre }} ({{ servicio.precio }}$)
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="habitacion_id" class="form-label">Seleccione la Habitación:</label>
+          <select id="habitacion_id" class="form-select" [(ngModel)]="nuevaFactura.habitacion_id" name="habitacion_id" required>
+            <option value="" disabled selected>Seleccione una habitación</option>
+            <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">
+              {{ habitacion.nombre }} ({{ habitacion.numero }})
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="usuario_id" class="form-label">Seleccione el Usuario:</label>
+          <select id="usuario_id" class="form-select" [(ngModel)]="nuevaFactura.usuario_id" name="usuario_id" required>
+            <option value="" disabled selected>Seleccione un usuario</option>
+            <option *ngFor="let usuario of usuarios" [value]="usuario.id">
+              {{ usuario.nombre }} {{ usuario.apellido }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="codigo_factura" class="form-label">Código de Factura:</label>
+          <input type="text" id="codigo_factura" class="form-control" [(ngModel)]="nuevaFactura.codigo_factura" name="codigo_factura" required />
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Crear Factura
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Acordeón para filtros -->
+  <div class="accordion mb-4" id="accordionFilters">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
+          Filtrar Facturas
+        </button>
+      </h2>
+      <div id="collapseFilters" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionFilters">
+        <div class="accordion-body">
+          <div class="mb-3">
+            <label for="filtro" class="form-label">Buscar por código de factura o usuario:</label>
+            <input
+              type="text"
+              id="filtro"
+              class="form-control"
+              [(ngModel)]="filtro"
+              placeholder="Ingrese texto a filtrar..."
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de facturas -->
+  <div class="table-responsive mb-5">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Código de Factura</th>
+          <th>Reserva</th>
+          <th>Servicio</th>
+          <th>Habitación</th>
+          <th>Usuario</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let factura of facturasFiltradas">
+          <td>{{ factura.codigo_factura }}</td>
+          <td>Reserva #{{ factura.reserva_id }}</td>
+          <td>{{ getServicioName(factura.servicio_id) }}</td>
+          <td>{{ getHabitacionName(factura.habitacion_id) }}</td>
+          <td>{{ getUsuarioName(factura.usuario_id) }}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-info me-2" (click)="openEditModal(factura)">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+            <button class="btn btn-sm btn-danger me-2" (click)="confirmDeleteFactura(factura.id)">
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
+            <button class="btn btn-sm btn-secondary" (click)="generarPDF(factura)">
+              <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="facturasFiltradas.length === 0" class="text-center">
+      <p>No se encontraron facturas con el filtro aplicado.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar factura -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true" #editModalElement>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="actualizarFactura()" #editForm="ngForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Editar Factura</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="closeEditModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="editReserva" class="form-label">Reserva:</label>
+            <select
+              id="editReserva"
+              class="form-select"
+              [(ngModel)]="facturaActual.reserva_id"
+              name="editReserva"
+              required
+            >
+              <option value="" disabled>Seleccione una reserva</option>
+              <option *ngFor="let reserva of reservas" [value]="reserva.id">
+                Reserva #{{ reserva.id }} ({{ getUsuarioName(reserva.usuario_id) }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="editServicio" class="form-label">Servicio:</label>
+            <select
+              id="editServicio"
+              class="form-select"
+              [(ngModel)]="facturaActual.servicio_id"
+              name="editServicio"
+              required
+            >
+              <option value="" disabled>Seleccione un servicio</option>
+              <option *ngFor="let servicio of servicios" [value]="servicio.id">
+                {{ servicio.nombre }} ({{ servicio.precio }}$)
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="editHabitacion" class="form-label">Habitación:</label>
+            <select
+              id="editHabitacion"
+              class="form-select"
+              [(ngModel)]="facturaActual.habitacion_id"
+              name="editHabitacion"
+              required
+            >
+              <option value="" disabled>Seleccione una habitación</option>
+              <option *ngFor="let habitacion of habitaciones" [value]="habitacion.id">
+                {{ habitacion.nombre }} ({{ habitacion.numero }})
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="editUsuario" class="form-label">Usuario:</label>
+            <select
+              id="editUsuario"
+              class="form-select"
+              [(ngModel)]="facturaActual.usuario_id"
+              name="editUsuario"
+              required
+            >
+              <option value="" disabled>Seleccione un usuario</option>
+              <option *ngFor="let usuario of usuarios" [value]="usuario.id">
+                {{ usuario.nombre }} {{ usuario.apellido }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="editCodigo" class="form-label">Código de Factura:</label>
+            <input
+              type="text"
+              id="editCodigo"
+              class="form-control"
+              [(ngModel)]="facturaActual.codigo_factura"
+              name="editCodigo"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cerrar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid">
+            Actualizar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

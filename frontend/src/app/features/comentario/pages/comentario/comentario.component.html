@@ -1,0 +1,110 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a href="#" class="navbar-brand d-flex align-items-center">
+      <img src="../../../../../assets/imagenes/logo.png" alt="logo" width="50" class="me-2" />
+      <span>Panel empleado</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login">Cerrar sesión</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/comentario">Comentario</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/factura">Factura</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reserva">Reserva</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/servicio">Servicio</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <!-- Card de creación de comentarios -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h3 class="card-title mb-0">Crear Comentario</h3>
+    </div>
+    <div class="card-body">
+      <!-- Notificación de éxito -->
+      <div
+        *ngIf="mostrarNotificacion"
+        class="alert alert-success alert-dismissible fade show"
+        role="alert"
+      >
+        Comentario creado exitosamente.
+        <button
+          type="button"
+          class="btn-close"
+          (click)="cerrarNotificacion()"
+        ></button>
+      </div>
+
+      <!-- Formulario de comentarios -->
+      <form (ngSubmit)="crearComentario()">
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="usuario_id" class="form-label">Seleccione el Usuario:</label>
+            <select
+              id="usuario_id"
+              class="form-select"
+              [(ngModel)]="nuevoComentario.usuario_id"
+              name="usuario_id"
+              required
+            >
+              <option value="" disabled selected>Seleccione un usuario</option>
+              <option *ngFor="let usuario of usuarios" [value]="usuario.id">
+                {{ usuario.nombre }} {{ usuario.apellido }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label for="contenido" class="form-label">Comentario:</label>
+            <textarea
+              id="contenido"
+              class="form-control"
+              rows="4"
+              [(ngModel)]="nuevoComentario.contenido"
+              name="contenido"
+              placeholder="Escribe tu comentario aquí..."
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="text-end">
+          <button type="submit" class="btn btn-primary">Crear Comentario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Listado de comentarios en cards -->
+  <h3 class="mb-4">Listado de Comentarios</h3>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let comentario of comentarios">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            {{ comentario.usuario?.nombre }} {{ comentario.usuario?.apellido }}
+          </h5>
+          <p class="card-text">{{ comentario.contenido }}</p>
+        </div>
+        <div class="card-footer text-muted">
+          {{ comentario.created_at | date: 'medium' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
